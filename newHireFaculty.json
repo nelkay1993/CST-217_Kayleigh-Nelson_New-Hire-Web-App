@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Kayleigh Nelson",
+    "email": "kayleighnelson@delta.edu",
+    "hire_date": "5/22/2024"
+  },
+  {
+    "id": 2,
+    "name": "Tyler Johnroe",
+    "email": "tylerjohn@delta.edu",
+    "hire_date": "6/7/2020"
+  },
+  {
+    "id": 3,
+    "name": "Justin Bamberg",
+    "email": "justinbam@delta.edu",
+    "hire_date": "4/3/2008"
+  },
+  {
+    "id": 4,
+    "name": "Noel Christmas",
+    "email": "noelChristmas@delt.edu",
+    "hire_date": "12/09/2025"
+  },
+  {
+    "id": 5,
+    "name": "Jim Hopper ",
+    "email": "jimhopper@delta.edu",
+    "hire_date": "12/09/2025"
+  }
+]

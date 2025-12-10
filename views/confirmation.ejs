@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+    <head><meta charset = "utf-8"><title> <%= pageTitle %></title></head>
+    <body>
+        <h1><%= pageTitle %></h1>
+        <p> Saved: <strong><li><%= info.name %></li><li><%= info.email %></li><li><%=info.hire_date %></li></strong></p>
+        <p>Timestamp: <%= info.timestamp %></p>
+        <p><a href= "/">Return Home</a></p>
+        <%- include('partials/footer') %>
+    </body>
+</html>

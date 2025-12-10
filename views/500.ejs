@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title><%= pageTitle %></title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+    <main.left class = "content">
+        <h1>Something went wrong</h1>
+        <p> <%=message %></p>
+        <% if (stack) { %>
+            <details>
+                <summary>Technical details</summary>
+                <pre><%= stack %></pre>
+            </details>
+        <% } %>
+        <p><a class = "btn" href="/">Return Home</a></p>
+
+    </main.left>
+    <%- include('partials/footer')%>
+</body>
+
+</html>

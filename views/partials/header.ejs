@@ -1,0 +1,17 @@
+<header>
+<link rel="favicon" href="/favicon.icon" text-align: left />
+
+<h1>Delta Dashboard</h1>
+<img  src ="/delta_college_duck.png" alt = "Delta Duck holding a flag"  width = "75" height = "100">
+<p class="meta">Visits this session:
+<%= typeof sessionVisits !== 'undefined' ? sessionVisits: 0 %></p>
+<nav>
+    <a href="/" class <%= siteTitle === "Home" ? 'active' : '' %>">Home</a> |
+    <a href="/campus_info" class <%= siteTitle === "Campus Information" ? 'active' : '' %>">Campus Information</a> |
+    <a href="/new_hire_faculty_list" class <%= siteTitle === "" ? 'active' : '' %>">New Hire List</a> |
+    <a href="/new_hire_form" class <%= siteTitle === "" ? 'active' : '' %>"">New Hire Form</a>
+    </a>
+</nav>
+<hr>
+</header>
+</header>

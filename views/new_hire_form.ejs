@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset = "UTF-8">
+        <title>New Hire Form</title>
+         <link rel="stylesheet" href="/style.css">
+    </head>
+    <body>
+        <%- include('partials/header')%>
+        <h2>New Employee Information</h2>
+        <form action="/new_hire_form" method = "POST">
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Full name" required>
+    
+            </div>
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="name@delta.edu" required>
+            </div>
+            <div>
+                <label for="hire_date">Hire Date:</label>
+                <input type="text" id="hire_date" name="hire_date" placeholder="mm/dd/yyyy" required>
+            </div>
+                
+            <button type=" "submit">Submit</button>
+        </form>
+        <%- include('partials/footer') %>
+    </body>
+</html>
