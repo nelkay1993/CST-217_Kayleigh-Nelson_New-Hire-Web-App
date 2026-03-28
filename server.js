@@ -1,27 +1,59 @@
+/**
+* Project: Delta Dashboard API
+* Author: Kayleigh Nelson
+* Date: 2026-03-12
+* --------------------
+* Connects to MongoDB
+* Configures middleware
+* Starts the Express server
+
+* This project is designed to provide a dashboard for Delta administrators to manage campus information
+* includes the following:
+* Campus building information
+* User Creation and Authentication
+* Create and store New Hire Employee Information
+
+*/
+
+import { time } from "console"; 
 import express from "express";
+import mongoose from "mongoose";
+import "dotenv/config";
+import auth from "./middleware/auth_token.js";
+
+//Import Router
+
+import campusRouter from "./routes/campus_buildings/institution_info_sessions.js";
+import authRouter from "./routes/authenticate_authorize/authRoute.js";
+import employeeRouter from "./routes/employees/new_hire_employee_info.js";
+
 const app = express();
-const PORT = 3000;
-import fs from "fs";
-let newHireFaculty = [];
-try {
-  const fileContent = fs.readFileSync("./newHireFaculty.json", "utf-8").trim();
-  if(fileContent.length > 0) {
-    newHireFaculty = JSON.parse(fileContent);
-    console.log("RAW FILE CONTENT", fileContent);
-  }
-  else
-  {
-    console.warn("newHireFaculty.json is empty. Starting with an empty structure. ");
-    newHireFaculty = [];
-  }
+app.use(express.json());
+const PORT = process.env.PORT;
+
+app.locals.title = "Delta Dashboard";
+
+// Helper function to keep responses consistent
+function ok(res, message, data = null) {
+  return res.status(200).json({ message, data });
 }
-catch(err) {
-  console.error("Error reading or parsing newHireFaculty.json", err);
-}
+
+
+
+//MONGOOSE SETUP
+
+//connect to MongoDB (local or Atlas connection string)
+mongoose
+.connect(process.env.MONGO_URI)
+.then(() => console.log("Connect to MongoDB"))
+.catch((err) => console.error("MongoDB connection error:", err));
+
+
+
+//Converting URL to file path
 
 import path from "path";
 import { fileURLToPath } from "url";
-
 
 app.use(express.urlencoded({extended: true}));
 const __filename = fileURLToPath(import.meta.url);
@@ -31,50 +63,50 @@ app.set("view engine", "ejs");
 app.set("views", path.join( __dirname, "views"));
 
 
-app.use(express.static("public"));
-
-function saveNewHireData() {
-  fs.writeFileSync(
-    "./newHireFaculty.json",
-    JSON.stringify(newHireFaculty, null, 2)
-
-  );
-}
-
-app.locals.title = "Delta Dashboard";
-
-
-let sessionVisits = 0;
 app.use((req, res, next) => {
-  sessionVisits++;
-  res.locals.sessionVisits = sessionVisits;
+  console.log(`${req.method} request for ${req.url}`);
+  next(); //move on to the next middleware or route
+});
+
+
+//timestamp
+app.use((req, res, next) => {
+  req.requestTime = new Date().toLocaleString();
+  console.log("Request Time:", req.requestTime);
   next();
 });
 
-const requireKey = (req, res, next) => {
-  if (req.query.key !== "delta") 
-  {
-    return res.status(401).render("401", {pageTitle: "Unauthorized" });
-  }
-  next();
-};
 
 const stampCreatedAt = (req, res, next) => {
   if(req.method == "POST")
   {
     req.createdAt = new Date().toISOString();
+    console.log("Created At:", req.createdAt);
   }
   next();
 };
+
+
+//Routes 
+app.use("/auth", authRouter);
+app.use("/employees", employeeRouter);
+app.use("/campus_buildings", campusRouter);
 
 app.get("/", (req, res) => {
   res.render("home", {siteTitle: "Delta Dashboard", activePage: "home"});
 });
 
+//Authentication Confirmation Route
+app.get("/profile", auth.requireAuth, async (req, res) => {
+  // At this point, middleware already verified token
+  return ok(res, "You are authenticated", { userId: req.userId, email: req.email });
+});
 
-app.get("/new_hire_faculty_list", requireKey, (req, res) => {
+
+app.get("/new_hire_faculty_list", (req, res) => {
  
   res.render("faculty_list", {siteTitle: "New Hire Faculty List" , items: newHireFaculty, activePage: "home" });
+
 });
 
 app.get("/campus_info", (req, res) => {
@@ -83,113 +115,20 @@ app.get("/campus_info", (req, res) => {
 
 app.get("/new_hire_form", (req, res) => {
   res.render("new_hire_form",  {siteTitle: "New Hire Form", activePage: "new_hire_form", newHireFaculty });
-});
-
-//Route to handle form submission
-app.post("/new_hire_form", (req, res) => {
-  const info =
-   {name: req.body.name, 
-    email:  req.body.email,
-    hire_date: req.body.hire_date,
-    timestamp: new Date().toLocaleString()
-   } 
-
-
-  //Create a new id(last id + 1)
-  const newId = 
-    newHireFaculty.length > 0
-    ? newHireFaculty[newHireFaculty.length - 1].id + 1
-    : 1;
-  newHireFaculty.push({
-    id: newId, 
-    name: info.name,
-    email: info.email,
-    hire_date: info.hire_date})
-    
-  saveNewHireData();
-
   res.render("confirmation", {pageTitle: "Entry Saved", info} );
-
-  console.log(req.body)
- 
-});
-
-
-
-
-
-app.get("/welcome/:name/:timeOfDay", (req, res) => {
-  const{name, timeOfDay} = req.params; //pulls the dynamic value from URL
-  res.send(`<h1>Hello, ${name}!</h1><h2>Good ${timeOfDay}!</h2>\n 
-    <h3>Menu</h3> \n
-    <h4>What Would You Like To Do? </h4>
-    <li>Find Institution Information</li><li>New Faculty List</li>\n
-    <br>This will be a homepage that will give users options on where to go.`);
-});
-app.get("/institution/:school", (req, res) => {
-  const{school} = req.params;
- 
+  console.log(req.body, "Time of Entry: ", info.timestamp);
 
 });
 
-app.get("/institution/:school/:orgUnit/list-generator", (req, res) =>  {
-  res.send(`<h2>New Hire Faculty List Generator</h2> <br>
-    <h3>Description</h3>
-    <p>This application generates a list of new hired faculty of Delta College within a date range.</p>
-    <p> Please fill the following fields and then click 'Run' </p><br><br>
-    This page will prompt the user to fill in fields for the desired report`)
+app.post("/new_hire_form", stampCreatedAt, async (req, res) => {
+  const newHireEmployee = await newHireEmployee.create(req.body);
+  res.render("confirmation", {pageTitle: "Entry Saved", info} );
+  console.log(req.body, "Time of Entry: ", req.createdAt);
+
 });
 
-app.get("/institution/:school/:orgUnit/list-generator/results", (req, res) => {
-  res.send(`This page will display the report; consisting of names and email address of new faculty hires between desired dates`);
-});
 
-app.get("/api/new_hire_faculty_record", (req, res) => {
-  res.json(newHireFaculty);
-});
-
-//simple logger
-app.use((req, res, next) =>{
-  console.log(`${req.method} request for ${req.url}`);
-  next(); //move on t the next middleware or route
-});
-
-//timestamp
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  next();
-});
-
-app.get("/time", (req, res) => {
-  res.send(`This request was received at ${req.requestTime}`);
-});
-
-//timestamp
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  next();
-});
-
-app.get("/time", (req, res) => {
-  res.send(`This request was received at ${req.requestTime}`);
-});
-
-app.get("/api/new_hire_faculty_record/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const record = newHireFaculty.find(person => person.id === id);
-
-  if(record) {
-    res.json(record);
-  }
-  else {
-    res.status(404).json({message: "Record not found"});
-  }
-  });
-
-
-app.get("/about", (req, res) => {   
-  res.sendFile(path.join(__dirname, "public", "index.html" ));
-});  
+//Error Routes 
 
 app.get("/trigger-500", (req, res, next) => {
   next(new Error("Intentional test error"));
@@ -219,4 +158,4 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {  
 	console.log(`Server is running at http://localhost:${PORT}`); 
-});  
+});
