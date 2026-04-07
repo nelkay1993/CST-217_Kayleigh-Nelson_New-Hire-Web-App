@@ -5,13 +5,13 @@ import Counter from "./counter.js";
 const NewHireEmployeeSchema  = new mongoose.Schema({
     name: { 
         type: String,
-         required: [true, "A name is required."], 
+         required: [true, "A name is required",  400], 
          trim: true
     },
     emailAddress:{ 
         
         type: String, 
-        required: [true, "An email address is required."],
+        required: [true, "An email address is required", 400],
         unique: true,
         trim: true, 
         lowercase: true, 

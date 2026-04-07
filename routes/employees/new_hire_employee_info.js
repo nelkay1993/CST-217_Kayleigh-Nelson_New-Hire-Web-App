@@ -30,8 +30,12 @@ employeeRouter.post("/", auth.requireAuth, async (req, res) => {
             userAccessId: req.userAccessId
         });
 
+
         return sendSuccess(res, "New hire employee record created successfully", newEmployeeRecord, 201);
      } catch(err) {
+        if( err.name === "ValidationError") {
+            return sendError(res, "A required field is missing or invalid", err.message, 400);
+        }
         return sendError(res, "Failed to create new hire employee record", err.message, 500);
      }       
 });
