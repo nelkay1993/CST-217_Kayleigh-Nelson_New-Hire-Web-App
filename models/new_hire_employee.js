@@ -41,7 +41,9 @@ const NewHireEmployeeSchema  = new mongoose.Schema({
     },
     
     employeeID: {
-        type: Number, 
+        type: Number,
+        min: [1000000, "Employee ID must be a least 7 digits"],
+        max: [9999999, "Employee ID must be a maximum of 7 digits"],
         unique: true, 
     },
 
@@ -59,13 +61,20 @@ const NewHireEmployeeSchema  = new mongoose.Schema({
 );
 
 NewHireEmployeeSchema.pre("save", async function() {
-            if (this.employeeID) return;
-
-            const counter = await Counter.findOneAndUpdate(
+            if(!this.isNew || this.employeeID) return;
+            
+            let counter = await Counter.findOne({name: "employeeID"});
+            if (!counter) {
+                counter = new Counter({ name: "employeeID" });
+                await counter.save();
+            }
+            else{
+                counter = await Counter.findOneAndUpdate(
                 { name: "employeeID" },
-                { $inc: { seq: 999999 } },
+                { $inc: { seq: 1 } },
                 { new: true, upsert: true }
-            );
+                );
+            }
 
             this.employeeID = counter.seq;
 

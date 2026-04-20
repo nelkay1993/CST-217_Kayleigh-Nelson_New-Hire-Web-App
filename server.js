@@ -15,29 +15,37 @@
 
 */
 
-import { time } from "console"; 
 import express from "express";
 import mongoose from "mongoose";
 import "dotenv/config";
-import auth from "./middleware/auth_token.js";
+import morgan from "morgan";
 
 //Import Router
 
 import campusRouter from "./routes/campus_buildings/institution_info_sessions.js";
 import authRouter from "./routes/authenticate_authorize/authRoute.js";
 import employeeRouter from "./routes/employees/new_hire_employee_info.js";
+import testingRouter from "./routes/testing.js";
+import middlewareController from "./middleware/logger.js";
+
+
+const{
+  logger, 
+  timestamp,  } = middlewareController;
 
 const app = express();
 app.use(express.json());
+app.use(morgan("dev"));
+app.use(middlewareController.logger);
+app.use(middlewareController.timestamp);
+
+
+
+
+
 const PORT = process.env.PORT;
 
 app.locals.title = "Delta Dashboard";
-
-// Helper function to keep responses consistent
-function ok(res, message, data = null) {
-  return res.status(200).json({ message, data });
-}
-
 
 
 //MONGOOSE SETUP
@@ -63,43 +71,18 @@ app.set("view engine", "ejs");
 app.set("views", path.join( __dirname, "views"));
 
 
-app.use((req, res, next) => {
-  console.log(`${req.method} request for ${req.url}`);
-  next(); //move on to the next middleware or route
-});
 
-
-//timestamp
-app.use((req, res, next) => {
-  req.requestTime = new Date().toLocaleString();
-  console.log("Request Time:", req.requestTime);
-  next();
-});
-
-
-const stampCreatedAt = (req, res, next) => {
-  if(req.method == "POST")
-  {
-    req.createdAt = new Date().toISOString();
-    console.log("Created At:", req.createdAt);
-  }
-  next();
-};
-
-
-//Routes 
+//Backend Routes 
 app.use("/auth", authRouter);
 app.use("/employees", employeeRouter);
 app.use("/campus_buildings", campusRouter);
+app.use("/testing", testingRouter);
+
+
+//UI Routes
 
 app.get("/", (req, res) => {
   res.render("home", {siteTitle: "Delta Dashboard", activePage: "home"});
-});
-
-//Authentication Confirmation Route
-app.get("/profile", auth.requireAuth, async (req, res) => {
-  // At this point, middleware already verified token
-  return ok(res, "You are authenticated", { userId: req.userId, email: req.email });
 });
 
 
@@ -120,7 +103,7 @@ app.get("/new_hire_form", (req, res) => {
 
 });
 
-app.post("/new_hire_form", stampCreatedAt, async (req, res) => {
+app.post("/new_hire_form", timestamp, async (req, res) => {
   const newHireEmployee = await newHireEmployee.create(req.body);
   res.render("confirmation", {pageTitle: "Entry Saved", info} );
   console.log(req.body, "Time of Entry: ", req.createdAt);
