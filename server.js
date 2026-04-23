@@ -56,7 +56,9 @@ mongoose
 .then(() => console.log("Connect to MongoDB"))
 .catch((err) => console.error("MongoDB connection error:", err));
 
-
+app.listen(PORT, () => {  
+	console.log(`Server is running at http://localhost:${PORT}`); 
+});
 
 //Converting URL to file path
 
