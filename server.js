@@ -1,19 +1,3 @@
-/**
-* Project: Delta Dashboard API
-* Author: Kayleigh Nelson
-* Date: 2026-03-12
-* --------------------
-* Connects to MongoDB
-* Configures middleware
-* Starts the Express server
-
-* This project is designed to provide a dashboard for Delta administrators to manage campus information
-* includes the following:
-* Campus building information
-* User Creation and Authentication
-* Create and store New Hire Employee Information
-
-*/
 
 import express from "express";
 import mongoose from "mongoose";

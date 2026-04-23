@@ -11,7 +11,14 @@ includes the following:
 
 ## What This Project Does
 This is a REST API built with Express and MongoDB.
-It allows users to create, read, update, and delete new hire employee entries and campus information
+It allows users to do the following: 
+ 1. With jwt token, create, read, update, and delete new hire employee entries.
+ 2. Create, Read, Update, and Delete campus information
+
+ ## Technology
+1. Node 
+2. Express
+3. MongoDB
 
 ## How to Run It
 1. Run npm install
@@ -19,14 +26,20 @@ It allows users to create, read, update, and delete new hire employee entries an
 3. Run node server.js
 4. Test routes in Postman
 
+## Evironmental Variables
+1. MONGO_URI
+2. JWT_SECRET
+3. PORT 
+
+
 ## Main Routes
 POST /authenticate_authorize
 POST /authenticate_authorize/login
-POST, GET, /campus_building
+POST, GET /campus_buildings
 GET /campus_buildings/:searchId
-PUT /campus_buildings/:id
-DELETE /campus_buildings/:id
-POST /employees
+PUT, DELETE /campus_buildings/:id
+POST, GET /employees (protected)
+PUT, DELETE /employees/:employeeID (protected)
 
 
 

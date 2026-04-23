@@ -11,7 +11,9 @@ const {
 } = controller;
 
 //Routes
-loginRouter.post("/", auth.requireAuth, loginUser);
+
+loginRouter.post("/", validateObjectId, loginUser);
+loginRouter.post("/", loginUser);
 loginRouter.get("/profile", auth.requireAuth, profile);
 
 export default loginRouter;
