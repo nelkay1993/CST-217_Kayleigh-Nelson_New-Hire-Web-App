@@ -66,7 +66,7 @@ const createUser = async (req, res) => {
         });
 
 
-        return sendSuccess(res, "User created successfully", {email: newUser.email}, 201);
+        return sendSuccess(res, "User created successfully", {email: newUser.email, id: newUser._id}, 201);
     } catch (err) {
         return sendError(res, "Create User failed", err.message, 500);
     }
