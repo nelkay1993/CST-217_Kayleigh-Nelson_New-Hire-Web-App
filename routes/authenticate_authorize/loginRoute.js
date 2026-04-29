@@ -12,7 +12,6 @@ const {
 
 //Routes
 
-loginRouter.post("/", validateObjectId, loginUser);
 loginRouter.post("/", loginUser);
 loginRouter.get("/profile", auth.requireAuth, profile);
 

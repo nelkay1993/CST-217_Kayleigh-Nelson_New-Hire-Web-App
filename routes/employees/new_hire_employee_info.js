@@ -9,11 +9,13 @@ const {
     createNewEmployee,
     getEmployeeRecords,
     updateEmployeeRecord,
+    searchEmployeeByName,
     deleteEmployeeRecord
 } = controller;
 
 employeeRouter.post("/", auth.requireAuth, createNewEmployee);
 employeeRouter.get("/", auth.requireAuth, getEmployeeRecords);
+employeeRouter.get("/search", auth.requireAuth, searchEmployeeByName);
 employeeRouter.put("/:employeeID", auth.requireAuth, updateEmployeeRecord);
 employeeRouter.delete("/:employeeID", auth.requireAuth, deleteEmployeeRecord);      
 

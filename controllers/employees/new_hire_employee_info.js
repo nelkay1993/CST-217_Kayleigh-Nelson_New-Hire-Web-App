@@ -99,6 +99,37 @@ export const updateEmployeeRecord = async (req, res) => {
     }
 };
 
+//GET: Retrieve a NewHireEmployee that matches a keyword search in the name field.
+//  Search should be case-insensitive and allow for partial matches.
+export const searchEmployeeByName = async (req, res) => {
+    try {
+
+        const allowedFields = {"name": 1, "emailAddress": 1, "employeeID": 1, "hireDate": 0, "_id": 0};
+        const filter = {userAccessId: req.userAccessId};
+        
+        Object.entries(req.query).forEach(([key, value]) => {
+            if (value && allowedFields[key] === 1) {
+                if(key === "employeeID") {
+                    filter[key] = Number(value);
+                }
+                else {
+                    filter[key] = {$regex: value, $options: "i"};
+                }
+            }
+
+            if(allowedFields[key] === 0) {
+                sendError(res, "Invalid search field", `The field "${key}" cannot be searched.`, 400);
+            }
+        });
+        const results = await NewHireEmployee.find(filter, allowedFields);
+
+         sendSuccess(res, "Search completed successfully", results, 200);   
+
+    } catch (err) {
+        sendError(res, "Failed to search employee records", err.message, 500);
+    }
+};
+
 
 //DELETE: Delete a NewHireEmployee by employeeID
 export const deleteEmployeeRecord = async (req, res) => {
@@ -118,6 +149,7 @@ export default {
     createNewEmployee,
     getEmployeeRecords, 
     updateEmployeeRecord,
+    searchEmployeeByName,
     deleteEmployeeRecord
 };
 
