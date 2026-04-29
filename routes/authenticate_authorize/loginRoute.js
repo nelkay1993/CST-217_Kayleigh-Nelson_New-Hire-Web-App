@@ -12,6 +12,10 @@ const {
 
 //Routes
 
+<<<<<<< HEAD
+=======
+loginRouter.post("/", loginUser);
+>>>>>>> 9c612d0 (Remove validateObjectId from login route)
 loginRouter.post("/", loginUser);
 loginRouter.get("/profile", auth.requireAuth, profile);
 
